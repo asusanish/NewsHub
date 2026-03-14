@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NewsHub — Your Daily News Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #080c18;
+      --surface: #0f1522;
+      --card: #151d2e;
+      --card-hover: #1b2538;
+      --accent: #e63946;
+      --accent-dark: #c1121f;
+      --gold: #fbbf24;
+      --green: #22c55e;
+      --purple: #818cf8;
+      --text: #f1f5f9;
+      --text-muted: #7f8ea8;
+      --text-dim: #3d4d65;
+      --border: #1e2d45;
+      --border-light: #243452;
+      --radius: 12px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.5);
+      --shadow-sm: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    a{text-decoration:none;color:inherit;}
+    button{font-family:'DM Sans',sans-serif;cursor:pointer;}
+    select,input,textarea{font-family:'DM Sans',sans-serif;}
+
+    /* ─── SCROLLBAR ─────────────────────────── */
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:3px;}
+    ::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+    /* ─── NAVBAR ────────────────────────────── */
+    .navbar{position:sticky;top:0;z-index:1000;background:rgba(8,12,24,0.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+    .nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;height:68px;padding:0 1.5rem;gap:0.5rem;}
+    .nav-brand{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:900;cursor:pointer;display:flex;align-items:center;gap:0.1rem;margin-right:1rem;white-space:nowrap;}
+    .nav-brand .accent{color:var(--accent);}
+    .nav-brand .dot{color:var(--gold);font-size:2rem;line-height:0;vertical-align:middle;}
+    .nav-links{display:flex;align-items:center;gap:0.25rem;flex:1;}
+    .nav-btn{padding:0.45rem 1rem;color:var(--text-muted);background:none;border:none;border-radius:8px;font-size:0.9rem;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .nav-btn:hover,.nav-btn.active{color:var(--text);background:var(--card);}
+    .nav-dropdown{position:relative;}
+    .nav-dropdown-btn{display:flex;align-items:center;gap:0.4rem;}
+    .nav-dropdown-btn i{font-size:0.7rem;transition:transform .2s;}
+    .nav-dropdown:hover .nav-dropdown-btn i{transform:rotate(180deg);}
+    .nav-dropdown-menu{position:absolute;top:calc(100% + 6px);left:0;background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius);min-width:175px;overflow:hidden;box-shadow:var(--shadow);display:none;}
+    .nav-dropdown:hover .nav-dropdown-menu{display:block;}
+    .nav-drop-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;color:var(--text-muted);font-size:0.88rem;font-weight:500;cursor:pointer;transition:all .2s;}
+    .nav-drop-item:hover{background:var(--card-hover);color:var(--text);}
+    .nav-drop-item .cat-dot{width:8px;height:8px;border-radius:50%;}
+    .nav-auth{display:flex;align-items:center;gap:0.5rem;margin-left:auto;}
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1.25rem;border-radius:8px;border:none;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border-light);}
+    .btn-ghost:hover{color:var(--text);border-color:var(--text-muted);}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-primary:hover{background:var(--accent-dark);transform:translateY(-1px);}
+    .btn-secondary{background:var(--card);color:var(--text);border:1px solid var(--border-light);}
+    .btn-secondary:hover{background:var(--card-hover);}
+    .btn-danger{background:rgba(230,57,70,.1);color:var(--accent);border:1px solid rgba(230,57,70,.2);}
+    .btn-danger:hover{background:var(--accent);color:#fff;}
+    .btn-sm{padding:0.3rem 0.75rem;font-size:0.78rem;border-radius:6px;}
+    .btn-full{width:100%;justify-content:center;padding:0.8rem;}
+    /* User menu */
+    .nav-user{display:flex;align-items:center;gap:0.6rem;cursor:pointer;padding:0.35rem 0.6rem 0.35rem 0.35rem;border-radius:40px;border:1px solid var(--border-light);background:var(--card);position:relative;transition:all .2s;}
+    .nav-user:hover{border-color:var(--accent);}
+    .nav-pfp{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;overflow:hidden;flex-shrink:0;}
+    .nav-pfp img{width:100%;height:100%;object-fit:cover;}
+    .nav-user-info{display:flex;flex-direction:column;line-height:1.2;}
+    .nav-user-name{font-size:.85rem;font-weight:700;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .nav-user-role{font-size:.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;}
+    .user-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius);min-width:210px;overflow:hidden;box-shadow:var(--shadow);display:none;z-index:100;}
+    .nav-user.open .user-dropdown{display:block;}
+    .udrop-header{padding:1rem;border-bottom:1px solid var(--border);}
+    .udrop-name{font-weight:700;font-size:.92rem;}
+    .udrop-email{font-size:.78rem;color:var(--text-muted);margin-top:.2rem;word-break:break-all;}
+    .udrop-item{display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;font-size:.88rem;color:var(--text-muted);cursor:pointer;transition:all .2s;}
+    .udrop-item:hover{background:var(--card-hover);color:var(--text);}
+    .udrop-item.danger{color:var(--accent);}
+
+    /* ─── PAGES ─────────────────────────────── */
+    .page{display:none;animation:fadeIn .3s ease;}
+    .page.active{display:block;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ─── TICKER ────────────────────────────── */
+    .ticker-bar{background:var(--accent);padding:.45rem 0;overflow:hidden;}
+    .ticker-inner{display:flex;align-items:center;}
+    .ticker-label{background:var(--bg);color:var(--accent);font-weight:800;font-size:.7rem;padding:.2rem .75rem;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;flex-shrink:0;margin-left:.75rem;}
+    .ticker-track-wrap{overflow:hidden;flex:1;margin-left:.75rem;}
+    .ticker-track{display:inline-flex;gap:2rem;animation:tick 40s linear infinite;white-space:nowrap;}
+    .ticker-track:hover{animation-play-state:paused;}
+    @keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}  }
+    .ticker-item{font-size:.8rem;font-weight:600;color:#fff;padding-right:2rem;border-right:1px solid rgba(255,255,255,.3);}
+
+    /* ─── HOME HERO ─────────────────────────── */
+    .home-hero{padding:2.5rem 1.5rem 0;max-width:1400px;margin:0 auto;}
+    .section-label{display:inline-flex;align-items:center;gap:.5rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:1.25rem;}
+    .section-label::before{content:'';width:20px;height:2px;background:var(--accent);}
+    .news-hero-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+    .featured-card{border-radius:var(--radius);overflow:hidden;background:var(--card);cursor:pointer;position:relative;transition:all .3s;border:1px solid var(--border);}
+    .featured-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,.5);border-color:var(--accent);}
+    .featured-img-wrap{width:100%;height:280px;overflow:hidden;position:relative;}
+    .featured-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+    .featured-card:hover .featured-img-wrap img{transform:scale(1.04);}
+    .img-placeholder{width:100%;height:100%;background:linear-gradient(135deg,var(--surface) 0%,var(--card-hover) 100%);display:flex;align-items:center;justify-content:center;font-size:3.5rem;}
+    .featured-body{padding:1.25rem 1.5rem 1.5rem;}
+    .cat-badge{display:inline-block;padding:.2rem .7rem;border-radius:20px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.7rem;}
+    .cat-sports{background:rgba(34,197,94,.12);color:#4ade80;}
+    .cat-politics{background:rgba(230,57,70,.12);color:#f87171;}
+    .cat-technology{background:rgba(129,140,248,.12);color:#a5b4fc;}
+    .cat-general{background:rgba(251,191,36,.12);color:#fcd34d;}
+    .cat-admin{background:rgba(251,146,60,.12);color:#fb923c;}
+    .article-title-lg{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;line-height:1.35;margin-bottom:.6rem;}
+    .article-excerpt{color:var(--text-muted);font-size:.88rem;line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.9rem;}
+    .article-meta{display:flex;align-items:center;gap:.9rem;font-size:.75rem;color:var(--text-muted);}
+    .article-meta i{color:var(--accent);margin-right:.25rem;}
+    /* Side stack */
+    .side-stack{display:flex;flex-direction:column;gap:1rem;}
+    .side-card{background:var(--card);border-radius:var(--radius);padding:.9rem;cursor:pointer;display:flex;gap:.9rem;transition:all .2s;border:1px solid var(--border);}
+    .side-card:hover{border-color:var(--accent);background:var(--card-hover);}
+    .side-thumb{width:78px;height:78px;border-radius:8px;object-fit:cover;flex-shrink:0;overflow:hidden;}
+    .side-thumb img{width:100%;height:100%;object-fit:cover;}
+    .side-thumb-placeholder{width:78px;height:78px;border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+    .side-title{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .side-meta{font-size:.72rem;color:var(--text-muted);margin-top:.4rem;}
+    /* Article grid */
+    .articles-section{padding:0 1.5rem 2rem;max-width:1400px;margin:0 auto;}
+    .articles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+    .article-card{background:var(--card);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .3s;border:1px solid var(--border);}
+    .article-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 12px 32px rgba(0,0,0,.4);}
+    .card-img-wrap{width:100%;height:170px;overflow:hidden;}
+    .card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+    .article-card:hover .card-img-wrap img{transform:scale(1.05);}
+    .card-img-placeholder{width:100%;height:170px;background:linear-gradient(135deg,var(--surface),var(--card-hover));display:flex;align-items:center;justify-content:center;font-size:2rem;}
+    .card-body{padding:1rem 1.1rem 1.2rem;}
+    .article-title-md{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.5rem;}
+    .article-title-sm{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:600;line-height:1.4;}
+
+    /* ─── ARTICLE PAGE ───────────────────────── */
+    .article-page-wrap{max-width:860px;margin:0 auto;padding:2rem 1.5rem 3rem;}
+    .back-btn{display:inline-flex;align-items:center;gap:.5rem;color:var(--text-muted);font-size:.85rem;cursor:pointer;padding:.4rem 0;border:none;background:none;transition:color .2s;margin-bottom:1.5rem;}
+    .back-btn:hover{color:var(--accent);}
+    .article-hero-img{width:100%;max-height:480px;object-fit:cover;border-radius:var(--radius);margin:1.5rem 0;}
+    .article-full-title{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;line-height:1.2;margin-bottom:1rem;}
+    .article-full-body{font-size:1.025rem;line-height:1.85;color:#c4cedc;}
+    .article-full-body p{margin-bottom:1.25rem;}
+    .article-full-body a{color:var(--accent);text-decoration:underline;}
+    .article-source-link{margin-top:1.5rem;padding:1rem 1.25rem;background:var(--card);border-radius:var(--radius);border-left:3px solid var(--accent);font-size:.9rem;color:var(--text-muted);}
+    .article-source-link a{color:var(--accent);}
+
+    /* Comments */
+    .comments-section{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);}
+    .comments-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;}
+    .comments-count{font-size:.8rem;background:var(--card);color:var(--text-muted);padding:.2rem .6rem;border-radius:20px;font-family:'DM Sans',sans-serif;font-weight:600;}
+    .comment-box{background:var(--card);border-radius:var(--radius);padding:1.25rem;margin-bottom:2rem;border:1px solid var(--border);}
+    .comment-box textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;color:var(--text);font-size:.9rem;resize:vertical;min-height:90px;transition:border-color .2s;}
+    .comment-box textarea:focus{outline:none;border-color:var(--accent);}
+    .comment-box-footer{display:flex;justify-content:flex-end;margin-top:.75rem;}
+    .comment-item{display:flex;gap:.9rem;margin-bottom:1.5rem;}
+    .c-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;overflow:hidden;}
+    .c-avatar img{width:100%;height:100%;object-fit:cover;}
+    .c-avatar.admin-a{background:var(--gold);color:#000;}
+    .c-body{flex:1;background:var(--card);border-radius:var(--radius);padding:.9rem 1.1rem;border:1px solid var(--border);}
+    .c-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;flex-wrap:wrap;}
+    .c-author{font-weight:700;font-size:.88rem;}
+    .c-badge{font-size:.6rem;padding:.15rem .5rem;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+    .badge-admin{background:rgba(251,191,36,.12);color:var(--gold);}
+    .badge-user{background:rgba(129,140,248,.12);color:var(--purple);}
+    .c-time{font-size:.72rem;color:var(--text-muted);margin-left:auto;}
+    .c-text{font-size:.88rem;color:#c4cedc;line-height:1.65;}
+    .c-actions{display:flex;gap:1rem;margin-top:.65rem;}
+    .c-action{background:none;border:none;color:var(--text-muted);font-size:.78rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;transition:color .2s;}
+    .c-action:hover{color:var(--accent);}
+    .replies{margin-left:3rem;margin-top:.75rem;}
+    .reply-form{display:none;margin-top:.75rem;}
+    .reply-form textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem;color:var(--text);font-size:.85rem;resize:vertical;min-height:70px;}
+    .reply-form textarea:focus{outline:none;border-color:var(--accent);}
+    .reply-form-btns{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.5rem;}
+    .login-prompt{text-align:center;padding:1.5rem;background:var(--card);border-radius:var(--radius);border:1px solid var(--border);color:var(--text-muted);font-size:.9rem;}
+    .login-prompt span{color:var(--accent);cursor:pointer;font-weight:600;}
+
+    /* ─── AUTH PAGES ────────────────────────── */
+    .auth-wrap{min-height:calc(100vh - 68px);display:flex;align-items:center;justify-content:center;padding:2rem;background:radial-gradient(ellipse at 50% 0%, rgba(230,57,70,.06) 0%, transparent 65%);}
+    .auth-card{background:var(--card);border:1px solid var(--border-light);border-radius:16px;padding:2.25rem;width:100%;max-width:440px;box-shadow:0 24px 64px rgba(0,0,0,.5);}
+    .auth-logo{text-align:center;margin-bottom:1.75rem;}
+    .auth-logo h1{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:900;}
+    .auth-logo h1 span{color:var(--accent);}
+    .auth-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:.35rem;}
+    .auth-sub{color:var(--text-muted);font-size:.88rem;margin-bottom:1.75rem;}
+    .form-group{margin-bottom:1.1rem;}
+    .form-label{display:block;font-size:.78rem;font-weight:700;color:var(--text-muted);margin-bottom:.45rem;text-transform:uppercase;letter-spacing:.5px;}
+    .form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;color:var(--text);font-size:.92rem;transition:all .2s;}
+    .form-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(230,57,70,.1);}
+    .form-input.err{border-color:var(--accent);}
+    .form-err{font-size:.78rem;color:var(--accent);margin-top:.35rem;}
+    .form-ok{font-size:.78rem;color:var(--green);margin-top:.35rem;}
+    .pw-wrap{position:relative;}
+    .pw-wrap .form-input{padding-right:2.8rem;}
+    .pw-toggle{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.9rem;}
+    .auth-footer{text-align:center;margin-top:1.25rem;font-size:.88rem;color:var(--text-muted);}
+    .auth-link{color:var(--accent);cursor:pointer;font-weight:600;}
+    .auth-link:hover{text-decoration:underline;}
+    .auth-divider{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;color:var(--text-dim);font-size:.8rem;}
+    .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    /* ─── PROFILE PAGE ──────────────────────── */
+    .profile-wrap{max-width:680px;margin:0 auto;padding:2rem 1.5rem;}
+    .profile-header-card{background:var(--card);border-radius:16px;padding:1.75rem;display:flex;align-items:center;gap:1.75rem;margin-bottom:1.5rem;border:1px solid var(--border);}
+    .profile-pfp-ring{position:relative;cursor:pointer;flex-shrink:0;}
+    .profile-pfp{width:90px;height:90px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#fff;overflow:hidden;border:3px solid var(--border-light);}
+    .profile-pfp img{width:100%;height:100%;object-fit:cover;}
+    .pfp-edit-btn{position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#fff;border:2px solid var(--card);}
+    .profile-info h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;}
+    .profile-info .p-email{color:var(--text-muted);font-size:.85rem;margin-top:.25rem;}
+    .profile-info .p-role{display:inline-block;margin-top:.4rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:.15rem .55rem;border-radius:20px;background:rgba(230,57,70,.12);color:var(--accent);}
+    .profile-section-card{background:var(--card);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;border:1px solid var(--border);}
+    .ps-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;}
+
+    /* ─── ADMIN PAGE ────────────────────────── */
+    .admin-wrap{padding:2rem 1.5rem;max-width:1400px;margin:0 auto;}
+    .admin-hero{margin-bottom:1.75rem;}
+    .admin-hero h1{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:.25rem;}
+    .admin-hero p{color:var(--text-muted);font-size:.9rem;}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem;}
+    .stat-card{background:var(--card);border-radius:var(--radius);padding:1.25rem;border:1px solid var(--border);transition:all .2s;}
+    .stat-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+    .stat-icon{font-size:1.4rem;margin-bottom:.6rem;}
+    .stat-val{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;line-height:1;}
+    .stat-lbl{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:.25rem;}
+    .admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.75rem;}
+    .a-tab{padding:.7rem 1.4rem;cursor:pointer;color:var(--text-muted);font-weight:600;font-size:.88rem;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+    .a-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+    .a-tab-body{display:none;}
+    .a-tab-body.active{display:block;}
+    .post-form-card{background:var(--card);border-radius:16px;padding:1.75rem;border:1px solid var(--border);}
+    .post-form-card textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;color:var(--text);font-size:.92rem;resize:vertical;min-height:200px;transition:border-color .2s;}
+    .post-form-card textarea:focus{outline:none;border-color:var(--accent);}
+    .post-form-card select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;color:var(--text);font-size:.92rem;transition:border-color .2s;appearance:none;}
+    .post-form-card select:focus{outline:none;border-color:var(--accent);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .data-table-wrap{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
+    .data-table{width:100%;border-collapse:collapse;}
+    .data-table th{text-align:left;padding:.85rem 1rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:1px solid var(--border);background:var(--surface);}
+    .data-table td{padding:.85rem 1rem;border-bottom:1px solid var(--border);font-size:.88rem;vertical-align:middle;}
+    .data-table tr:last-child td{border-bottom:none;}
+    .data-table tr:hover td{background:var(--card-hover);}
+    .table-actions{display:flex;gap:.5rem;align-items:center;}
+
+    /* ─── CATEGORY PAGE ─────────────────────── */
+    .cat-page-header{padding:2.5rem 1.5rem 1.5rem;max-width:1400px;margin:0 auto;}
+    .cat-page-title{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;margin-bottom:.35rem;}
+    .cat-page-sub{color:var(--text-muted);font-size:.9rem;}
+    .cat-articles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;padding:0 1.5rem 2rem;max-width:1400px;margin:0 auto;}
+
+    /* ─── ADMIN LOGIN ───────────────────────── */
+    .admin-login-wrap{min-height:calc(100vh - 68px);display:flex;align-items:center;justify-content:center;padding:2rem;background:radial-gradient(ellipse at 50% 0%, rgba(230,57,70,.1) 0%, transparent 65%);}
+    .admin-login-card{background:var(--card);border:1px solid rgba(230,57,70,.3);border-radius:16px;padding:2.25rem;width:100%;max-width:440px;box-shadow:0 24px 64px rgba(230,57,70,.1),0 0 0 1px rgba(230,57,70,.05);}
+    .admin-shield-icon{width:64px;height:64px;background:rgba(230,57,70,.12);border:2px solid rgba(230,57,70,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.6rem;color:var(--accent);}
+    .admin-login-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:800;text-align:center;margin-bottom:.35rem;}
+    .admin-login-sub{color:var(--text-muted);font-size:.85rem;text-align:center;margin-bottom:1.75rem;}
+    .admin-creds-hint{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:8px;padding:.85rem 1rem;margin-bottom:1.5rem;font-size:.8rem;color:var(--gold);display:flex;gap:.6rem;align-items:flex-start;}
+    .admin-creds-hint i{flex-shrink:0;margin-top:.05rem;}
+    .admin-login-badge{display:flex;align-items:center;justify-content:center;gap:.4rem;margin-top:1.25rem;font-size:.75rem;color:var(--text-dim);}
+    .admin-login-badge i{color:var(--green);}
+
+    /* ─── FOOTER ────────────────────────────── */
+    footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem 1.5rem 1.5rem;margin-top:4rem;}
+    .footer-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;}
+    .footer-brand{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;margin-bottom:.75rem;}
+    .footer-brand span{color:var(--accent);}
+    .footer-desc{color:var(--text-muted);font-size:.83rem;line-height:1.75;}
+    .f-heading{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:.85rem;}
+    .f-links{list-style:none;display:flex;flex-direction:column;gap:.4rem;}
+    .f-links li{color:var(--text-muted);font-size:.83rem;cursor:pointer;transition:color .2s;}
+    .f-links li:hover{color:var(--accent);}
+    .footer-bottom{max-width:1400px;margin:1.75rem auto 0;padding-top:1.25rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:var(--text-dim);}
+
+    /* ─── MODALS ────────────────────────────── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:2000;padding:1rem;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--card);border:1px solid var(--border-light);border-radius:16px;padding:1.75rem;width:100%;max-width:420px;box-shadow:0 32px 80px rgba(0,0,0,.6);}
+    .modal-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;}
+    .modal-footer{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;}
+
+    /* ─── TOAST ─────────────────────────────── */
+    .toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;}
+    .toast{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius);padding:.9rem 1.25rem;min-width:260px;display:flex;align-items:center;gap:.7rem;box-shadow:var(--shadow);animation:toastIn .3s ease;font-size:.88rem;}
+    .toast.success{border-left:3px solid var(--green);}
+    .toast.error{border-left:3px solid var(--accent);}
+    .toast.info{border-left:3px solid var(--purple);}
+    @keyframes toastIn{from{transform:translateX(110%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+    /* ─── LOADING ───────────────────────────── */
+    .loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem;gap:1rem;color:var(--text-muted);}
+    .spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .empty-state{text-align:center;padding:3rem;color:var(--text-muted);}
+    .empty-state i{font-size:2.5rem;opacity:.25;margin-bottom:.75rem;display:block;}
+
+    /* ─── MISC ──────────────────────────────── */
+    .divider{height:1px;background:var(--border);margin:1.5rem 0;}
+    .section-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.25rem;}
+    .section-header h2{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;}
+    .see-all{font-size:.82rem;color:var(--accent);cursor:pointer;font-weight:600;}
+    .see-all:hover{text-decoration:underline;}
+    .tag{display:inline-block;padding:.15rem .55rem;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:.72rem;color:var(--text-muted);}
+    /* Responsive */
+    @media(max-width:1024px){.news-hero-grid{grid-template-columns:1fr;}.articles-grid{grid-template-columns:repeat(2,1fr);}.cat-articles-grid{grid-template-columns:repeat(2,1fr);}.footer-grid{grid-template-columns:1fr 1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}.form-row{grid-template-columns:1fr;}}
+    @media(max-width:640px){.articles-grid{grid-template-columns:1fr;}.cat-articles-grid{grid-template-columns:1fr;}.article-full-title{font-size:1.75rem;}.nav-links{display:none;}.stats-row{grid-template-columns:1fr 1fr;}.footer-grid{grid-template-columns:1fr;}}
+    /* Image upload area */
+    .img-upload-area{border:2px dashed var(--border-light);border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-muted);}
+    .img-upload-area:hover{border-color:var(--accent);color:var(--text);}
+    .img-upload-area i{font-size:1.5rem;margin-bottom:.5rem;display:block;}
+    .img-preview-wrap{position:relative;display:inline-block;}
+    .img-preview{max-width:100%;max-height:150px;border-radius:8px;margin-top:.75rem;}
+    /* Admin badge in content */
+    .admin-indicator{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;color:var(--gold);font-weight:700;}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-brand" onclick="showPage('home')">
+      News<span class="accent">Hub</span><span class="dot">·</span>
+    </div>
+    <div class="nav-links">
+      <button class="nav-btn active" id="nav-home" onclick="showPage('home')"><i class="fas fa-home fa-sm"></i> Home</button>
+      <div class="nav-dropdown">
+        <button class="nav-btn nav-dropdown-btn" id="nav-cats"><i class="fas fa-th-large fa-sm"></i> Categories <i class="fas fa-chevron-down"></i></button>
+        <div class="nav-dropdown-menu">
+          <div class="nav-drop-item" onclick="showCategory('sports')">
+            <span class="cat-dot" style="background:#4ade80"></span>Sports
+          </div>
+          <div class="nav-drop-item" onclick="showCategory('politics')">
+            <span class="cat-dot" style="background:#f87171"></span>Politics
+          </div>
+          <div class="nav-drop-item" onclick="showCategory('technology')">
+            <span class="cat-dot" style="background:#a5b4fc"></span>Technology
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Auth buttons (logged out) -->
+    <div class="nav-auth" id="nav-auth-area">
+      <button class="btn btn-ghost" onclick="showPage('login')"><i class="fas fa-sign-in-alt"></i> Login</button>
+      <button class="btn btn-primary" onclick="showPage('register')">Register</button>
+      <button class="btn btn-secondary" onclick="showPage('admin')" style="display:none" id="nav-admin-btn"><i class="fas fa-shield-alt fa-sm"></i> Admin</button>
+    </div>
+    <!-- User pill (logged in) - hidden by default -->
+    <div class="nav-user" id="nav-user-area" style="display:none" onclick="toggleUserDropdown(event)">
+      <div class="nav-pfp" id="nav-pfp-el"></div>
+      <div class="nav-user-info">
+        <div class="nav-user-name" id="nav-username-el"></div>
+        <div class="nav-user-role" id="nav-userrole-el"></div>
+      </div>
+      <i class="fas fa-chevron-down" style="font-size:.7rem;color:var(--text-muted);margin-left:.2rem;"></i>
+      <div class="user-dropdown">
+        <div class="udrop-header">
+          <div class="udrop-name" id="udrop-name"></div>
+          <div class="udrop-email" id="udrop-email"></div>
+        </div>
+        <div class="udrop-item" onclick="showPage('profile')"><i class="fas fa-user-circle fa-fw"></i> My Profile</div>
+        <div class="udrop-item" id="udrop-admin-link" style="display:none" onclick="showPage('admin')"><i class="fas fa-cog fa-fw"></i> Admin Panel</div>
+        <div class="udrop-item danger" onclick="logout()"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════ TOAST CONTAINER ═══════════════════ -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+<!-- PFP Upload Modal -->
+<div class="modal-overlay" id="pfp-modal">
+  <div class="modal">
+    <div class="modal-title">Change Profile Picture</div>
+    <div class="img-upload-area" onclick="document.getElementById('pfp-file-input').click()">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <div>Click to upload image</div>
+      <div style="font-size:.75rem;margin-top:.25rem;">PNG, JPG up to 2MB</div>
+    </div>
+    <input type="file" id="pfp-file-input" accept="image/*" style="display:none" onchange="handlePfpUpload(event)">
+    <div style="margin-top:.75rem;text-align:center;" id="pfp-preview-area"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closePfpModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePfp()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <div class="modal-title">Confirm Delete</div>
+    <p style="color:var(--text-muted);font-size:.9rem;" id="delete-modal-msg">Are you sure you want to delete this item? This cannot be undone.</p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE: HOME ═══════════════════ -->
+<div class="page active" id="page-home">
+  <!-- Ticker -->
+  <div class="ticker-bar">
+    <div class="ticker-inner">
+      <div class="ticker-label">⚡ Breaking</div>
+      <div class="ticker-track-wrap">
+        <div class="ticker-track" id="ticker-content">
+          <span class="ticker-item">Loading latest news...</span>
+          <span class="ticker-item">Loading latest news...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Hero grid -->
+  <div class="home-hero">
+    <div class="section-label">Top Stories</div>
+    <div class="news-hero-grid" id="hero-grid">
+      <div class="loading-state"><div class="spinner"></div><span>Loading news…</span></div>
+    </div>
+  </div>
+  <!-- Latest articles -->
+  <div class="articles-section">
+    <div class="section-header">
+      <h2>Latest News</h2>
+    </div>
+    <div class="articles-grid" id="latest-grid">
+      <div class="loading-state" style="grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+  </div>
+  <!-- Category teasers -->
+  <div class="articles-section" style="margin-top:2rem;">
+    <div class="section-header"><h2>Sports</h2><span class="see-all" onclick="showCategory('sports')">See all →</span></div>
+    <div class="articles-grid" id="sports-teaser-grid"></div>
+  </div>
+  <div class="articles-section" style="margin-top:2rem;">
+    <div class="section-header"><h2>Technology</h2><span class="see-all" onclick="showCategory('technology')">See all →</span></div>
+    <div class="articles-grid" id="tech-teaser-grid"></div>
+  </div>
+  <div class="articles-section" style="margin-top:2rem;">
+    <div class="section-header"><h2>Politics</h2><span class="see-all" onclick="showCategory('politics')">See all →</span></div>
+    <div class="articles-grid" id="politics-teaser-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE: CATEGORY ═══════════════════ -->
+<div class="page" id="page-category">
+  <div class="cat-page-header">
+    <div class="section-label" id="cat-section-label">Category</div>
+    <h1 class="cat-page-title" id="cat-page-title">Sports</h1>
+    <p class="cat-page-sub" id="cat-page-sub"></p>
+  </div>
+  <div class="cat-articles-grid" id="cat-articles-grid">
+    <div class="loading-state" style="grid-column:1/-1"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE: ARTICLE ═══════════════════ -->
+<div class="page" id="page-article">
+  <div class="article-page-wrap">
+    <button class="back-btn" id="article-back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+    <div id="article-content"></div>
+    <!-- Comments -->
+    <div class="comments-section" id="comments-section"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE: ADMIN LOGIN ═══════════════════ -->
+<div class="page" id="page-admin-login">
+  <div class="admin-login-wrap">
+    <div class="admin-login-card">
+      <div class="admin-shield-icon"><i class="fas fa-shield-alt"></i></div>
+      <div class="admin-login-title">Admin Access</div>
+      <div class="admin-login-sub">Restricted area — authorized personnel only</div>
+      <div class="admin-creds-hint">
+        <i class="fas fa-info-circle"></i>
+        <span>Default credentials: <strong>admin</strong> / <strong>Admin@123</strong></span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Admin Username</label>
+        <div style="position:relative;">
+          <input type="text" class="form-input" id="al-username" placeholder="Enter admin username" style="padding-left:2.5rem;" onkeydown="if(event.key==='Enter')doAdminLogin()">
+          <i class="fas fa-user" style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--accent);font-size:.85rem;pointer-events:none;"></i>
+        </div>
+        <div class="form-err" id="al-username-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Admin Password</label>
+        <div class="pw-wrap" style="position:relative;">
+          <i class="fas fa-lock" style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--accent);font-size:.85rem;pointer-events:none;z-index:1;"></i>
+          <input type="password" class="form-input" id="al-password" placeholder="Enter admin password" style="padding-left:2.5rem;padding-right:2.8rem;" onkeydown="if(event.key==='Enter')doAdminLogin()">
+          <button class="pw-toggle" type="button" onclick="togglePw('al-password',this)"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="form-err" id="al-pw-err"></div>
+      </div>
+      <div class="form-err" id="al-general-err" style="text-align:center;margin-bottom:.75rem;"></div>
+      <button class="btn btn-primary btn-full" onclick="doAdminLogin()" style="background:linear-gradient(135deg,#c1121f,#e63946);letter-spacing:.5px;">
+        <i class="fas fa-shield-alt"></i> Sign In as Administrator
+      </button>
+      <div class="auth-divider">or</div>
+      <button class="btn btn-ghost btn-full" onclick="showPage('login')">
+        <i class="fas fa-user"></i> Regular User Login
+      </button>
+      <div class="admin-login-badge"><i class="fas fa-lock"></i> Secured admin portal</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE: LOGIN ═══════════════════ -->
+<div class="page" id="page-login">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>News<span>Hub</span></h1>
+      </div>
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-sub">Sign in to continue to NewsHub</div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-input" id="login-username" placeholder="Enter your username">
+        <div class="form-err" id="login-username-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pw-wrap">
+          <input type="password" class="form-input" id="login-password" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
+          <button class="pw-toggle" type="button" onclick="togglePw('login-password',this)"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="form-err" id="login-pw-err"></div>
+      </div>
+      <div class="form-err" id="login-general-err" style="margin-bottom:.75rem;text-align:center;"></div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+      <div class="auth-divider">or</div>
+      <button class="btn btn-ghost btn-full" onclick="showPage('admin-login')"><i class="fas fa-shield-alt" style="color:var(--accent);"></i> Admin Login</button>
+      <div class="auth-footer">Don't have an account? <span class="auth-link" onclick="showPage('register')">Register here</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE: REGISTER ═══════════════════ -->
+<div class="page" id="page-register">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo"><h1>News<span>Hub</span></h1></div>
+      <div class="auth-title">Create account</div>
+      <div class="auth-sub">Join NewsHub and stay informed</div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-input" id="reg-username" placeholder="Choose a username" oninput="validateRegField('username')">
+        <div class="form-err" id="reg-username-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" id="reg-email" placeholder="your@email.com" oninput="validateRegField('email')">
+        <div class="form-err" id="reg-email-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" class="form-input" id="reg-phone" placeholder="+977 98xxxxxxxx" oninput="validateRegField('phone')">
+        <div class="form-err" id="reg-phone-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pw-wrap">
+          <input type="password" class="form-input" id="reg-password" placeholder="Min 6 characters" oninput="validateRegField('password')">
+          <button class="pw-toggle" type="button" onclick="togglePw('reg-password',this)"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="form-err" id="reg-password-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="pw-wrap">
+          <input type="password" class="form-input" id="reg-confirm" placeholder="Repeat password" oninput="validateRegField('confirm')" onkeydown="if(event.key==='Enter')doRegister()">
+          <button class="pw-toggle" type="button" onclick="togglePw('reg-confirm',this)"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="form-err" id="reg-confirm-err"></div>
+      </div>
+      <div class="form-err" id="reg-general-err" style="margin-bottom:.75rem;text-align:center;"></div>
+      <button class="btn btn-primary btn-full" onclick="doRegister()"><i class="fas fa-user-plus"></i> Create Account</button>
+      <div class="auth-footer">Already have an account? <span class="auth-link" onclick="showPage('login')">Sign in</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE: PROFILE ═══════════════════ -->
+<div class="page" id="page-profile">
+  <div class="profile-wrap">
+    <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to home</button>
+    <!-- Header -->
+    <div class="profile-header-card">
+      <div class="profile-pfp-ring" onclick="openPfpModal()">
+        <div class="profile-pfp" id="profile-pfp-el"></div>
+        <div class="pfp-edit-btn"><i class="fas fa-camera"></i></div>
+      </div>
+      <div class="profile-info">
+        <h2 id="profile-display-name"></h2>
+        <div class="p-email" id="profile-display-email"></div>
+        <div class="p-role" id="profile-display-role"></div>
+      </div>
+    </div>
+    <!-- Info section -->
+    <div class="profile-section-card">
+      <div class="ps-title"><i class="fas fa-id-card fa-fw"></i> Account Information</div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-input" id="prof-username" readonly style="opacity:.6;cursor:not-allowed;">
+      </div>
+      <div id="prof-email-group" class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="prof-email" readonly style="opacity:.6;cursor:not-allowed;">
+      </div>
+      <div id="prof-phone-group" class="form-group">
+        <label class="form-label">Phone Number</label>
+        <div style="display:flex;gap:.5rem;">
+          <input type="tel" class="form-input" id="prof-phone" placeholder="Add phone number">
+          <button class="btn btn-secondary" onclick="savePhone()">Save</button>
+        </div>
+        <div class="form-err" id="prof-phone-err"></div>
+        <div class="form-ok" id="prof-phone-ok"></div>
+      </div>
+    </div>
+    <!-- Change Password -->
+    <div class="profile-section-card">
+      <div class="ps-title"><i class="fas fa-lock fa-fw"></i> Change Password</div>
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <div class="pw-wrap">
+          <input type="password" class="form-input" id="prof-current-pw" placeholder="Enter current password">
+          <button class="pw-toggle" type="button" onclick="togglePw('prof-current-pw',this)"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <div class="pw-wrap">
+          <input type="password" class="form-input" id="prof-new-pw" placeholder="Min 6 characters">
+          <button class="pw-toggle" type="button" onclick="togglePw('prof-new-pw',this)"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm New Password</label>
+        <div class="pw-wrap">
+          <input type="password" class="form-input" id="prof-confirm-pw" placeholder="Repeat new password">
+          <button class="pw-toggle" type="button" onclick="togglePw('prof-confirm-pw',this)"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <div class="form-err" id="prof-pw-err" style="margin-bottom:.75rem;"></div>
+      <div class="form-ok" id="prof-pw-ok" style="margin-bottom:.75rem;"></div>
+      <button class="btn btn-primary" onclick="changePassword()"><i class="fas fa-key"></i> Update Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE: ADMIN ═══════════════════ -->
+<div class="page" id="page-admin">
+  <div class="admin-wrap">
+    <div class="admin-hero">
+      <h1><i class="fas fa-shield-alt" style="color:var(--accent);margin-right:.5rem;"></i> Admin Panel</h1>
+      <p>Manage your news portal content and users</p>
+    </div>
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">📰</div>
+        <div class="stat-val" id="stat-posts">0</div>
+        <div class="stat-lbl">Total Posts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💬</div>
+        <div class="stat-val" id="stat-comments">0</div>
+        <div class="stat-lbl">Comments</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-val" id="stat-users">0</div>
+        <div class="stat-lbl">Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-val" id="stat-today">0</div>
+        <div class="stat-lbl">Posts Today</div>
+      </div>
+    </div>
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <div class="a-tab active" onclick="switchAdminTab('post')">New Post</div>
+      <div class="a-tab" onclick="switchAdminTab('posts')">Manage Posts</div>
+      <div class="a-tab" onclick="switchAdminTab('comments')">Comments</div>
+      <div class="a-tab" onclick="switchAdminTab('users')">Users</div>
+    </div>
+    <!-- New Post -->
+    <div class="a-tab-body active" id="tab-post">
+      <div class="post-form-card">
+        <div class="form-group">
+          <label class="form-label">Article Title</label>
+          <input type="text" class="form-input" id="post-title" placeholder="Enter a compelling headline...">
+          <div class="form-err" id="post-title-err"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-input" id="post-category">
+              <option value="general">General</option>
+              <option value="sports">Sports</option>
+              <option value="politics">Politics</option>
+              <option value="technology">Technology</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cover Image <span style="color:var(--text-dim);">(optional)</span></label>
+            <!-- Toggle -->
+            <div style="display:flex;gap:.5rem;margin-bottom:.6rem;">
+              <button class="btn btn-sm" id="img-tab-url" onclick="switchImgTab('url')" style="background:var(--accent);color:#fff;border:none;">URL</button>
+              <button class="btn btn-sm btn-secondary" id="img-tab-upload" onclick="switchImgTab('upload')"><i class="fas fa-upload fa-sm"></i> Upload</button>
+            </div>
+            <!-- URL input -->
+            <div id="img-input-url">
+              <input type="url" class="form-input" id="post-image" placeholder="https://example.com/image.jpg">
+            </div>
+            <!-- Upload input -->
+            <div id="img-input-upload" style="display:none;">
+              <div class="img-upload-area" id="post-drop-area" onclick="document.getElementById('post-img-file').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <div style="font-weight:600;">Click to upload or drag & drop</div>
+                <div style="font-size:.75rem;margin-top:.3rem;color:var(--text-dim);">PNG, JPG, WEBP — max 5MB</div>
+              </div>
+              <input type="file" id="post-img-file" accept="image/*" style="display:none" onchange="handlePostImgUpload(event)">
+              <div id="post-img-preview" style="display:none;margin-top:.75rem;position:relative;display:none;">
+                <img id="post-img-preview-img" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;">
+                <button onclick="clearPostImg()" style="position:absolute;top:.4rem;right:.4rem;background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Article Content</label>
+          <textarea id="post-content" class="form-input" style="min-height:220px;resize:vertical;" placeholder="Write your article content here..."></textarea>
+          <div class="form-err" id="post-content-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Excerpt <span style="color:var(--text-dim);">(short summary)</span></label>
+          <textarea id="post-excerpt" class="form-input" style="min-height:80px;resize:vertical;" placeholder="Brief summary for news cards..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="publishPost()"><i class="fas fa-paper-plane"></i> Publish Article</button>
+      </div>
+    </div>
+    <!-- Manage Posts -->
+    <div class="a-tab-body" id="tab-posts">
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Title</th><th>Category</th><th>Date</th><th>Comments</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-posts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Manage Comments -->
+    <div class="a-tab-body" id="tab-comments">
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Author</th><th>Comment</th><th>Article</th><th>Date</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-comments-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Users -->
+    <div class="a-tab-body" id="tab-users">
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Username</th><th>Email</th><th>Phone</th><th>Role</th><th>Joined</th>
+            </tr>
+          </thead>
+          <tbody id="admin-users-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">News<span>Hub</span></div>
+      <div class="footer-desc">Your trusted source for breaking news, in-depth analysis, and global stories across sports, politics, technology, and more.</div>
+    </div>
+    <div>
+      <div class="f-heading">Categories</div>
+      <ul class="f-links">
+        <li onclick="showCategory('sports')">Sports</li>
+        <li onclick="showCategory('politics')">Politics</li>
+        <li onclick="showCategory('technology')">Technology</li>
+        <li onclick="showPage('home')">General</li>
+      </ul>
+    </div>
+    <div>
+      <div class="f-heading">Account</div>
+      <ul class="f-links">
+        <li onclick="showPage('login')">Login</li>
+        <li onclick="showPage('register')">Register</li>
+        <li onclick="showPage('profile')">Profile</li>
+      </ul>
+    </div>
+    <div>
+      <div class="f-heading">Connect</div>
+      <ul class="f-links">
+        <li><i class="fab fa-twitter"></i> Twitter</li>
+        <li><i class="fab fa-facebook"></i> Facebook</li>
+        <li><i class="fab fa-instagram"></i> Instagram</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 NewsHub. All rights reserved.</span>
+    <span>Powered by real-time news feeds</span>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// DATABASE (localStorage wrapper)
+// ═══════════════════════════════════════════════════════════════════
+const DB = {
+  get(key){try{return JSON.parse(localStorage.getItem('nh_'+key)||'null');}catch{return null;}},
+  set(key,val){localStorage.setItem('nh_'+key,JSON.stringify(val));},
+  del(key){localStorage.removeItem('nh_'+key);}
+};
+function getUsers(){return DB.get('users')||[];}
+function saveUsers(u){DB.set('users',u);}
+function getPosts(){return DB.get('posts')||[];}
+function savePosts(p){DB.set('posts',p);}
+function getComments(){return DB.get('comments')||[];}
+function saveComments(c){DB.set('comments',c);}
+function getCurrentUser(){return DB.get('current_user');}
+function setCurrentUser(u){DB.set('current_user',u);}
+
+// ─── Init default admin ───
+function initDB(){
+  const users = getUsers();
+  if(!users.find(u=>u.username==='admin')){
+    users.push({
+      id:'admin_1',username:'admin',password:'Admin@123',
+      role:'admin',email:'superadministration@newsportal.com',
+      phone:'',pfp:'',joined:new Date().toISOString()
+    });
+    saveUsers(users);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NEWS FETCHING
+// ═══════════════════════════════════════════════════════════════════
+const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const RSS_FEEDS = {
+  general:'https://feeds.bbci.co.uk/news/rss.xml',
+  sports:'https://feeds.bbci.co.uk/sport/rss.xml',
+  politics:'https://feeds.bbci.co.uk/news/politics/rss.xml',
+  technology:'https://feeds.bbci.co.uk/news/technology/rss.xml'
+};
+const newsCache = {};
+
+async function fetchNews(cat='general'){
+  if(newsCache[cat]&&Date.now()-newsCache[cat].ts<5*60*1000) return newsCache[cat].data;
+  try{
+    const url = RSS_PROXY + encodeURIComponent(RSS_FEEDS[cat]) + '&count=30';
+    const r = await fetch(url);
+    const json = await r.json();
+    const items = (json.items||[]).map(item=>({
+      id:'rss_'+btoa(item.link||item.title).substring(0,20).replace(/[^a-z0-9]/gi,'_'),
+      title:item.title||'',
+      excerpt:stripHtml(item.description||item.content||'').substring(0,200),
+      content:item.content||item.description||'',
+      image:item.thumbnail||item.enclosure?.link||null,
+      link:item.link||'',
+      author:item.author||'BBC News',
+      pubDate:item.pubDate,
+      category:cat,
+      source:'rss'
+    }));
+    newsCache[cat]={data:items,ts:Date.now()};
+    return items;
+  }catch(e){
+    console.warn('RSS fetch failed',e);
+    return [];
+  }
+}
+
+function stripHtml(html){
+  const d=document.createElement('div');
+  d.innerHTML=html;
+  return d.textContent||d.innerText||'';
+}
+
+// Combine RSS + admin posts
+async function getAllNews(cat){
+  const rss = await fetchNews(cat||'general');
+  const posts = getPosts().filter(p=>!cat||p.category===cat).map(p=>({...p,source:'admin'}));
+  return [...posts.reverse(),...rss];
+}
+
+// Category emojis
+const CAT_EMOJI={sports:'⚽',politics:'🏛️',technology:'💻',general:'📰'};
+const CAT_DESC={
+  sports:'Latest scores, match results, player news and sporting highlights from around the world.',
+  politics:'Breaking political news, government updates, elections and policy analysis.',
+  technology:'Tech news, product launches, startup stories and digital innovation.'
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDERING
+// ═══════════════════════════════════════════════════════════════════
+function catBadge(cat){
+  return `<span class="cat-badge cat-${cat}">${(cat||'general').charAt(0).toUpperCase()+(cat||'general').slice(1)}</span>`;
+}
+function imgOrPlaceholder(img,cat,cls=''){
+  if(img) return `<img src="${img}" class="${cls}" loading="lazy" onerror="this.style.display='none'">`;
+  return `<div class="img-placeholder">${CAT_EMOJI[cat]||'📰'}</div>`;
+}
+function timeAgo(dateStr){
+  if(!dateStr) return '';
+  const d=new Date(dateStr),now=new Date();
+  const diff=Math.floor((now-d)/1000);
+  if(diff<60) return 'Just now';
+  if(diff<3600) return Math.floor(diff/60)+'m ago';
+  if(diff<86400) return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+function formatDate(dateStr){
+  if(!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+}
+
+async function renderHome(){
+  // Hero
+  const heroEl=document.getElementById('hero-grid');
+  heroEl.innerHTML=`<div class="loading-state"><div class="spinner"></div></div>`;
+  const news = await getAllNews('general');
+  const adminPosts = getPosts();
+  const allItems = [...getPosts().reverse(),...news].filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i);
+
+  if(allItems.length===0){
+    heroEl.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-wifi-slash"></i><p>Could not load news. Check your internet connection.</p></div>`;
+  } else {
+    const [featured,...rest]=allItems;
+    heroEl.innerHTML=`
+      <div class="featured-card" onclick="openArticle('${escAttr(featured.id)}')">
+        <div class="featured-img-wrap">${featured.image?`<img src="${featured.image}" onerror="this.parentElement.innerHTML='<div class=\\'img-placeholder\\'>${CAT_EMOJI[featured.category]||'📰'}</div>'">`:
+        `<div class="img-placeholder">${CAT_EMOJI[featured.category]||'📰'}</div>`}</div>
+        <div class="featured-body">
+          ${catBadge(featured.category)}
+          ${featured.source==='admin'?`<span class="admin-indicator"><i class="fas fa-star"></i> Editor's Pick</span>`:''}
+          <div class="article-title-lg">${esc(featured.title)}</div>
+          <div class="article-excerpt">${esc(featured.excerpt||'')}</div>
+          <div class="article-meta">
+            <span><i class="fas fa-user-circle"></i>${esc(featured.author||'Newsdesk')}</span>
+            <span><i class="fas fa-clock"></i>${timeAgo(featured.pubDate||featured.createdAt)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="side-stack">${rest.slice(0,4).map(a=>`
+        <div class="side-card" onclick="openArticle('${escAttr(a.id)}')">
+          <div class="side-thumb">${a.image?`<img src="${a.image}" onerror="this.style.display='none'">`:
+          `<div class="side-thumb-placeholder">${CAT_EMOJI[a.category]||'📰'}</div>`}</div>
+          <div>
+            ${catBadge(a.category)}
+            <div class="side-title">${esc(a.title)}</div>
+            <div class="side-meta">${timeAgo(a.pubDate||a.createdAt)}</div>
+          </div>
+        </div>`).join('')}
+      </div>`;
+  }
+
+  // Latest grid
+  const latestEl=document.getElementById('latest-grid');
+  const latestItems=allItems.slice(5,11);
+  latestEl.innerHTML=latestItems.length?latestItems.map(a=>articleCard(a)).join(''):`<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-newspaper"></i><p>No articles yet.</p></div>`;
+
+  // Category teasers
+  await renderCategoryTeaser('sports','sports-teaser-grid');
+  await renderCategoryTeaser('technology','tech-teaser-grid');
+  await renderCategoryTeaser('politics','politics-teaser-grid');
+
+  // Ticker
+  const tickerTrack=document.getElementById('ticker-content');
+  const tickerItems=allItems.slice(0,12).map(a=>`<span class="ticker-item">${esc(a.title)}</span>`).join('');
+  tickerTrack.innerHTML=tickerItems+tickerItems; // duplicate for seamless loop
+}
+
+async function renderCategoryTeaser(cat,elId){
+  const el=document.getElementById(elId);
+  if(!el) return;
+  const items=await getAllNews(cat);
+  const filtered=[...getPosts().filter(p=>p.category===cat).reverse(),...items].filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i);
+  el.innerHTML=filtered.slice(0,3).map(a=>articleCard(a)).join('');
+}
+
+function articleCard(a){
+  return `<div class="article-card" onclick="openArticle('${escAttr(a.id)}')">
+    <div class="card-img-wrap">${a.image?`<img src="${a.image}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'card-img-placeholder\\'>${CAT_EMOJI[a.category]||'📰'}</div>'">`:
+    `<div class="card-img-placeholder">${CAT_EMOJI[a.category]||'📰'}</div>`}</div>
+    <div class="card-body">
+      ${catBadge(a.category)}
+      <div class="article-title-md">${esc(a.title)}</div>
+      <div class="article-meta" style="margin-top:.5rem;">
+        <span><i class="fas fa-clock"></i>${timeAgo(a.pubDate||a.createdAt)}</span>
+        <span><i class="fas fa-comment"></i>${getComments().filter(c=>c.articleId===a.id&&!c.parentId).length}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function renderCategory(cat){
+  document.getElementById('cat-section-label').textContent=cat.charAt(0).toUpperCase()+cat.slice(1);
+  document.getElementById('cat-page-title').textContent=cat.charAt(0).toUpperCase()+cat.slice(1);
+  document.getElementById('cat-page-sub').textContent=CAT_DESC[cat]||'';
+  const grid=document.getElementById('cat-articles-grid');
+  grid.innerHTML=`<div class="loading-state" style="grid-column:1/-1"><div class="spinner"></div></div>`;
+  const items=[...getPosts().filter(p=>p.category===cat).reverse(),...(await fetchNews(cat))];
+  const unique=items.filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i);
+  grid.innerHTML=unique.length?unique.map(a=>articleCard(a)).join(''):`<div class="empty-state" style="grid-column:1/-1"><i class="fas fa-newspaper"></i><p>No articles in this category yet.</p></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ARTICLE VIEW
+// ═══════════════════════════════════════════════════════════════════
+let currentArticle=null;
+let prevPage='home';
+
+async function openArticle(id){
+  prevPage=document.querySelector('.page.active')?.id.replace('page-','') || 'home';
+  showPage('article');
+  const el=document.getElementById('article-content');
+  el.innerHTML=`<div class="loading-state"><div class="spinner"></div></div>`;
+
+  // Try admin posts first
+  let article=getPosts().find(p=>p.id===id);
+
+  // If not found, search RSS caches
+  if(!article){
+    for(const cat in newsCache){
+      const found=newsCache[cat].data?.find(a=>a.id===id);
+      if(found){article=found;break;}
+    }
+  }
+  // If still not found, try fetching all categories
+  if(!article){
+    for(const cat of ['general','sports','politics','technology']){
+      const items=await fetchNews(cat);
+      const found=items.find(a=>a.id===id);
+      if(found){article=found;break;}
+    }
+  }
+
+  if(!article){
+    el.innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Article not found.</p></div>`;
+    return;
+  }
+  currentArticle=article;
+
+  const body = article.source==='admin'
+    ? article.content.split('\n').filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('')
+    : `<p>${stripHtml(article.content||article.excerpt||'').replace(/\n+/g,'</p><p>')}</p>`;
+
+  el.innerHTML=`
+    <div>${catBadge(article.category)}${article.source==='admin'?`<span class="admin-indicator" style="margin-left:.5rem;"><i class="fas fa-star"></i> Editor's Pick</span>`:''}</div>
+    <h1 class="article-full-title" style="margin-top:.75rem;">${esc(article.title)}</h1>
+    <div class="article-meta" style="margin-bottom:.5rem;">
+      <span><i class="fas fa-user-circle"></i>${esc(article.author||'Newsdesk')}</span>
+      <span><i class="fas fa-calendar"></i>${formatDate(article.pubDate||article.createdAt)}</span>
+    </div>
+    ${article.image?`<img class="article-hero-img" src="${article.image}" onerror="this.style.display='none'">` : ''}
+    <div class="article-full-body">${body}</div>
+    ${article.link?`<div class="article-source-link"><i class="fas fa-external-link-alt" style="margin-right:.5rem;"></i>Original source: <a href="${article.link}" target="_blank" rel="noopener">${article.link}</a></div>`:''}
+  `;
+
+  renderComments(id);
+}
+
+function goBack(){
+  showPage(prevPage==='article'?'home':prevPage);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// COMMENTS
+// ═══════════════════════════════════════════════════════════════════
+function renderComments(articleId){
+  const user=getCurrentUser();
+  const comments=getComments().filter(c=>c.articleId===articleId&&!c.parentId);
+  const section=document.getElementById('comments-section');
+
+  section.innerHTML=`
+    <div class="comments-title">
+      Comments <span class="comments-count">${getComments().filter(c=>c.articleId===articleId).length}</span>
+    </div>
+    ${user?`
+    <div class="comment-box">
+      <textarea id="main-comment-input" placeholder="Share your thoughts..."></textarea>
+      <div class="comment-box-footer">
+        <button class="btn btn-primary btn-sm" onclick="postComment('${escAttr(articleId)}')"><i class="fas fa-paper-plane"></i> Post Comment</button>
+      </div>
+    </div>`:`
+    <div class="login-prompt">
+      <i class="fas fa-comment-dots" style="margin-right:.4rem;"></i>
+      <span onclick="showPage('login')">Login</span> or <span onclick="showPage('register')">register</span> to join the conversation.
+    </div>`}
+    <div id="comments-list">
+      ${comments.length?comments.map(c=>renderComment(c,articleId)).join(''):`<div class="empty-state"><i class="fas fa-comments"></i><p>No comments yet. Be the first!</p></div>`}
+    </div>`;
+}
+
+function renderComment(comment,articleId){
+  const users=getUsers();
+  const author=users.find(u=>u.id===comment.userId);
+  const isAdmin=author?.role==='admin';
+  const pfpHtml = author?.pfp
+    ? `<img src="${author.pfp}">`
+    : (author?.username||'?').charAt(0).toUpperCase();
+  const replies=getComments().filter(c=>c.parentId===comment.id);
+  const currentUser=getCurrentUser();
+  const canDelete=currentUser&&(currentUser.role==='admin'||currentUser.id===comment.userId);
+
+  return `
+  <div class="comment-item" id="comment-${comment.id}">
+    <div class="c-avatar ${isAdmin?'admin-a':''}">${pfpHtml}</div>
+    <div class="c-body">
+      <div class="c-header">
+        <span class="c-author">${esc(comment.username||'Anonymous')}</span>
+        <span class="c-badge ${isAdmin?'badge-admin':'badge-user'}">${isAdmin?'Admin':'User'}</span>
+        <span class="c-time">${timeAgo(comment.createdAt)}</span>
+      </div>
+      <div class="c-text">${esc(comment.text)}</div>
+      <div class="c-actions">
+        ${currentUser?`<button class="c-action" onclick="toggleReplyForm('${comment.id}')"><i class="fas fa-reply"></i> Reply</button>`:''}
+        ${canDelete?`<button class="c-action" onclick="deleteComment('${comment.id}','${escAttr(articleId)}')"><i class="fas fa-trash"></i> Delete</button>`:''}
+      </div>
+      <div class="reply-form" id="reply-form-${comment.id}">
+        <textarea placeholder="Write a reply..."></textarea>
+        <div class="reply-form-btns">
+          <button class="btn btn-ghost btn-sm" onclick="toggleReplyForm('${comment.id}')">Cancel</button>
+          <button class="btn btn-primary btn-sm" onclick="postReply('${comment.id}','${escAttr(articleId)}')"><i class="fas fa-paper-plane"></i> Reply</button>
+        </div>
+      </div>
+      ${replies.length?`<div class="replies">${replies.map(r=>renderComment(r,articleId)).join('')}</div>`:''}
+    </div>
+  </div>`;
+}
+
+function toggleReplyForm(commentId){
+  const form=document.getElementById('reply-form-'+commentId);
+  if(form){form.style.display=form.style.display==='block'?'none':'block';}
+}
+
+function postComment(articleId){
+  const user=getCurrentUser();
+  if(!user){showToast('Please login to comment','error');return;}
+  const input=document.getElementById('main-comment-input');
+  const text=input?.value?.trim();
+  if(!text){showToast('Comment cannot be empty','error');return;}
+  const comments=getComments();
+  comments.push({
+    id:'c_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+    articleId,userId:user.id,username:user.username,
+    text,parentId:null,createdAt:new Date().toISOString()
+  });
+  saveComments(comments);
+  renderComments(articleId);
+  showToast('Comment posted!','success');
+}
+
+function postReply(parentId,articleId){
+  const user=getCurrentUser();
+  if(!user){showToast('Please login to reply','error');return;}
+  const form=document.getElementById('reply-form-'+parentId);
+  const textarea=form?.querySelector('textarea');
+  const text=textarea?.value?.trim();
+  if(!text){showToast('Reply cannot be empty','error');return;}
+  const comments=getComments();
+  comments.push({
+    id:'c_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+    articleId,userId:user.id,username:user.username,
+    text,parentId,createdAt:new Date().toISOString()
+  });
+  saveComments(comments);
+  renderComments(articleId);
+  showToast('Reply posted!','success');
+}
+
+function deleteComment(commentId,articleId){
+  openDeleteModal('Are you sure you want to delete this comment?',()=>{
+    let comments=getComments();
+    // Delete comment and its replies
+    const toDelete=new Set([commentId]);
+    comments.filter(c=>c.parentId===commentId).forEach(c=>toDelete.add(c.id));
+    comments=comments.filter(c=>!toDelete.has(c.id));
+    saveComments(comments);
+    renderComments(articleId);
+    showToast('Comment deleted','info');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════════
+function doAdminLogin(){
+  ['al-username-err','al-pw-err','al-general-err'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='';});
+  const username=document.getElementById('al-username').value.trim();
+  const password=document.getElementById('al-password').value;
+  let valid=true;
+  if(!username){document.getElementById('al-username-err').textContent='Username is required';valid=false;}
+  if(!password){document.getElementById('al-pw-err').textContent='Password is required';valid=false;}
+  if(!valid) return;
+  const users=getUsers();
+  const user=users.find(u=>u.username.toLowerCase()===username.toLowerCase()&&u.password===password);
+  if(!user||user.role!=='admin'){
+    document.getElementById('al-general-err').textContent='Invalid admin credentials or insufficient privileges';
+    document.getElementById('al-username').classList.add('err');
+    document.getElementById('al-password').classList.add('err');
+    return;
+  }
+  setCurrentUser(user);
+  updateNavAuth();
+  showPage('admin');
+  showToast(`Welcome back, Administrator ${user.username}!`,'success');
+}
+
+function doLogin(){
+  clearLoginErrors();
+  const username=document.getElementById('login-username').value.trim();
+  const password=document.getElementById('login-password').value;
+  let valid=true;
+  if(!username){document.getElementById('login-username-err').textContent='Username is required';valid=false;}
+  if(!password){document.getElementById('login-pw-err').textContent='Password is required';valid=false;}
+  if(!valid) return;
+  const users=getUsers();
+  const user=users.find(u=>u.username.toLowerCase()===username.toLowerCase()&&u.password===password);
+  if(!user){document.getElementById('login-general-err').textContent='Invalid username or password';return;}
+  setCurrentUser(user);
+  updateNavAuth();
+  showPage('home');
+  showToast(`Welcome back, ${user.username}!`,'success');
+}
+
+function clearLoginErrors(){
+  ['login-username-err','login-pw-err','login-general-err'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='';});
+}
+
+function doRegister(){
+  clearRegErrors();
+  const username=document.getElementById('reg-username').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const phone=document.getElementById('reg-phone').value.trim();
+  const password=document.getElementById('reg-password').value;
+  const confirm=document.getElementById('reg-confirm').value;
+  let valid=true;
+
+  if(!username||username.length<3){document.getElementById('reg-username-err').textContent='Username must be at least 3 characters';valid=false;}
+  else if(getUsers().find(u=>u.username.toLowerCase()===username.toLowerCase())){document.getElementById('reg-username-err').textContent='Username already taken';valid=false;}
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){document.getElementById('reg-email-err').textContent='Enter a valid email address';valid=false;}
+  else if(getUsers().find(u=>u.email===email)){document.getElementById('reg-email-err').textContent='Email already registered';valid=false;}
+  if(phone&&!/^\+?[\d\s\-]{7,15}$/.test(phone)){document.getElementById('reg-phone-err').textContent='Enter a valid phone number';valid=false;}
+  if(!password||password.length<6){document.getElementById('reg-password-err').textContent='Password must be at least 6 characters';valid=false;}
+  if(password!==confirm){document.getElementById('reg-confirm-err').textContent='Passwords do not match';valid=false;}
+  if(!valid) return;
+
+  const newUser={
+    id:'user_'+Date.now(),username,email,phone,password,role:'user',
+    pfp:'',joined:new Date().toISOString()
+  };
+  const users=getUsers();
+  users.push(newUser);
+  saveUsers(users);
+  setCurrentUser(newUser);
+  updateNavAuth();
+  showPage('home');
+  showToast(`Welcome to NewsHub, ${username}!`,'success');
+}
+
+function clearRegErrors(){
+  ['reg-username-err','reg-email-err','reg-phone-err','reg-password-err','reg-confirm-err','reg-general-err']
+    .forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='';});
+}
+
+function validateRegField(field){
+  // Live validation
+  const errs={
+    username:()=>{const v=document.getElementById('reg-username').value.trim();return v.length<3&&v.length>0?'Too short (min 3 chars)':'';},
+    email:()=>{const v=document.getElementById('reg-email').value.trim();return v&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)?'Invalid email format':'';},
+    phone:()=>{const v=document.getElementById('reg-phone').value.trim();return v&&!/^\+?[\d\s\-]{7,15}$/.test(v)?'Invalid phone number':'';},
+    password:()=>{const v=document.getElementById('reg-password').value;return v&&v.length<6?'Min 6 characters':'';},
+    confirm:()=>{const p=document.getElementById('reg-password').value;const c=document.getElementById('reg-confirm').value;return c&&p!==c?'Passwords do not match':'';}
+  };
+  if(errs[field]){const e=document.getElementById('reg-'+field+'-err');if(e)e.textContent=errs[field]();}
+}
+
+function logout(){
+  DB.del('current_user');
+  updateNavAuth();
+  showPage('home');
+  showToast('You have been logged out','info');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════════════════════════════════
+function renderProfile(){
+  const user=getCurrentUser();
+  if(!user){showPage('login');return;}
+
+  // Update from DB (in case changed)
+  const users=getUsers();
+  const fresh=users.find(u=>u.id===user.id)||user;
+  setCurrentUser(fresh);
+
+  const isAdmin=fresh.role==='admin';
+  const pfpHtml=fresh.pfp
+    ?`<img src="${fresh.pfp}">`
+    :(fresh.username||'?').charAt(0).toUpperCase();
+
+  document.getElementById('profile-pfp-el').innerHTML=pfpHtml;
+  document.getElementById('profile-display-name').textContent=fresh.username;
+  document.getElementById('profile-display-email').textContent=fresh.email;
+  document.getElementById('profile-display-role').textContent=isAdmin?'Administrator':'Member';
+  document.getElementById('prof-username').value=fresh.username;
+  document.getElementById('prof-email').value=fresh.email;
+  document.getElementById('prof-phone').value=fresh.phone||'';
+
+  // Hide email/phone fields for admin display (but still show)
+  if(isAdmin){
+    const eg=document.getElementById('prof-email-group');
+    if(eg) eg.style.display='block'; // show but readonly
+  }
+}
+
+function savePhone(){
+  const user=getCurrentUser();
+  const phone=document.getElementById('prof-phone').value.trim();
+  const err=document.getElementById('prof-phone-err');
+  const ok=document.getElementById('prof-phone-ok');
+  err.textContent='';ok.textContent='';
+  if(phone&&!/^\+?[\d\s\-]{7,15}$/.test(phone)){err.textContent='Enter a valid phone number';return;}
+  const users=getUsers();
+  const idx=users.findIndex(u=>u.id===user.id);
+  if(idx>-1){users[idx].phone=phone;saveUsers(users);setCurrentUser(users[idx]);}
+  ok.textContent='Phone number saved!';
+  updateNavAuth();
+}
+
+function changePassword(){
+  const user=getCurrentUser();
+  const cur=document.getElementById('prof-current-pw').value;
+  const nw=document.getElementById('prof-new-pw').value;
+  const cf=document.getElementById('prof-confirm-pw').value;
+  const err=document.getElementById('prof-pw-err');
+  const ok=document.getElementById('prof-pw-ok');
+  err.textContent='';ok.textContent='';
+  if(cur!==user.password){err.textContent='Current password is incorrect';return;}
+  if(!nw||nw.length<6){err.textContent='New password must be at least 6 characters';return;}
+  if(nw!==cf){err.textContent='Passwords do not match';return;}
+  const users=getUsers();
+  const idx=users.findIndex(u=>u.id===user.id);
+  if(idx>-1){users[idx].password=nw;saveUsers(users);setCurrentUser(users[idx]);}
+  ok.textContent='Password updated successfully!';
+  document.getElementById('prof-current-pw').value='';
+  document.getElementById('prof-new-pw').value='';
+  document.getElementById('prof-confirm-pw').value='';
+}
+
+// PFP
+let pendingPfp=null;
+function openPfpModal(){
+  document.getElementById('pfp-preview-area').innerHTML='';
+  pendingPfp=null;
+  document.getElementById('pfp-modal').classList.add('open');
+}
+function closePfpModal(){document.getElementById('pfp-modal').classList.remove('open');}
+
+function handlePfpUpload(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  if(file.size>2*1024*1024){showToast('Image too large (max 2MB)','error');return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    pendingPfp=ev.target.result;
+    document.getElementById('pfp-preview-area').innerHTML=
+      `<img src="${pendingPfp}" class="img-preview" style="border-radius:50%;width:80px;height:80px;object-fit:cover;">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function savePfp(){
+  if(!pendingPfp){showToast('Please select an image first','error');return;}
+  const user=getCurrentUser();
+  const users=getUsers();
+  const idx=users.findIndex(u=>u.id===user.id);
+  if(idx>-1){users[idx].pfp=pendingPfp;saveUsers(users);setCurrentUser(users[idx]);}
+  closePfpModal();
+  renderProfile();
+  updateNavAuth();
+  showToast('Profile picture updated!','success');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ADMIN PANEL
+// ═══════════════════════════════════════════════════════════════════
+function renderAdmin(){
+  const user=getCurrentUser();
+  if(!user||user.role!=='admin'){showPage('login');showToast('Admin access required','error');return;}
+  updateAdminStats();
+  renderAdminPostsTable();
+  renderAdminCommentsTable();
+  renderAdminUsersTable();
+}
+
+function updateAdminStats(){
+  const posts=getPosts();
+  const comments=getComments();
+  const users=getUsers().filter(u=>u.role!=='admin');
+  const today=new Date().toDateString();
+  const todayPosts=posts.filter(p=>new Date(p.createdAt).toDateString()===today);
+  document.getElementById('stat-posts').textContent=posts.length;
+  document.getElementById('stat-comments').textContent=comments.length;
+  document.getElementById('stat-users').textContent=users.length;
+  document.getElementById('stat-today').textContent=todayPosts.length;
+}
+
+// Image tab toggle
+let postImgBase64 = null;
+function switchImgTab(tab){
+  const isUrl = tab === 'url';
+  document.getElementById('img-input-url').style.display = isUrl ? 'block' : 'none';
+  document.getElementById('img-input-upload').style.display = isUrl ? 'none' : 'block';
+  document.getElementById('img-tab-url').style.cssText = isUrl ? 'background:var(--accent);color:#fff;border:none;' : '';
+  document.getElementById('img-tab-upload').style.cssText = !isUrl ? 'background:var(--accent);color:#fff;border:none;' : '';
+  if(isUrl){ document.getElementById('img-tab-url').className='btn btn-sm'; document.getElementById('img-tab-url').style.background='var(--accent)';document.getElementById('img-tab-url').style.color='#fff'; }
+  if(!isUrl){ document.getElementById('img-tab-upload').className='btn btn-sm'; document.getElementById('img-tab-upload').style.background='var(--accent)';document.getElementById('img-tab-upload').style.color='#fff'; }
+}
+function handlePostImgUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 5*1024*1024){ showToast('Image too large (max 5MB)', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    postImgBase64 = ev.target.result;
+    const preview = document.getElementById('post-img-preview');
+    document.getElementById('post-img-preview-img').src = postImgBase64;
+    preview.style.display = 'block';
+    document.getElementById('post-drop-area').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+function clearPostImg(){
+  postImgBase64 = null;
+  document.getElementById('post-img-preview').style.display = 'none';
+  document.getElementById('post-drop-area').style.display = 'flex';
+  document.getElementById('post-img-file').value = '';
+}
+function handleDragOver(e){ e.preventDefault(); document.getElementById('post-drop-area').style.borderColor='var(--accent)'; document.getElementById('post-drop-area').style.background='rgba(230,57,70,.06)'; }
+function handleDragLeave(e){ document.getElementById('post-drop-area').style.borderColor=''; document.getElementById('post-drop-area').style.background=''; }
+function handleDrop(e){
+  e.preventDefault();
+  handleDragLeave(e);
+  const file = e.dataTransfer.files[0];
+  if(file && file.type.startsWith('image/')){ 
+    const dt = new DataTransfer(); dt.items.add(file);
+    document.getElementById('post-img-file').files = dt.files;
+    handlePostImgUpload({target:{files:[file]}});
+  }
+}
+
+function publishPost(){
+  const title=document.getElementById('post-title').value.trim();
+  const content=document.getElementById('post-content').value.trim();
+  const excerpt=document.getElementById('post-excerpt').value.trim();
+  const category=document.getElementById('post-category').value;
+  const image = postImgBase64 || document.getElementById('post-image').value.trim() || null;
+  let valid=true;
+  if(!title){document.getElementById('post-title-err').textContent='Title is required';valid=false;}else{document.getElementById('post-title-err').textContent='';}
+  if(!content){document.getElementById('post-content-err').textContent='Content is required';valid=false;}else{document.getElementById('post-content-err').textContent='';}
+  if(!valid) return;
+  const user=getCurrentUser();
+  const post={
+    id:'post_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+    title,content,excerpt:excerpt||content.substring(0,180)+'...',
+    category,image:image||null,
+    author:user.username,userId:user.id,
+    source:'admin',createdAt:new Date().toISOString(),pubDate:new Date().toISOString()
+  };
+  const posts=getPosts();
+  posts.push(post);
+  savePosts(posts);
+  // Clear form
+  ['post-title','post-content','post-excerpt','post-image'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('post-category').value='general';
+  clearPostImg();
+  postImgBase64 = null;
+  updateAdminStats();
+  renderAdminPostsTable();
+  // Invalidate home cache
+  showToast('Article published successfully!','success');
+}
+
+function renderAdminPostsTable(){
+  const posts=getPosts().slice().reverse();
+  const tbody=document.getElementById('admin-posts-tbody');
+  tbody.innerHTML=posts.length?posts.map(p=>`
+    <tr>
+      <td style="max-width:280px;"><div style="font-weight:600;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">${esc(p.title)}</div></td>
+      <td>${catBadge(p.category)}</td>
+      <td>${formatDate(p.createdAt)}</td>
+      <td>${getComments().filter(c=>c.articleId===p.id).length}</td>
+      <td><div class="table-actions">
+        <button class="btn btn-secondary btn-sm" onclick="openArticle('${p.id}');showPage('article');"><i class="fas fa-eye"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')"><i class="fas fa-trash"></i></button>
+      </div></td>
+    </tr>`).join(''):`<tr><td colspan="5"><div class="empty-state"><i class="fas fa-newspaper"></i><p>No posts published yet.</p></div></td></tr>`;
+}
+
+function deletePost(id){
+  openDeleteModal('Delete this article? All its comments will also be deleted.',()=>{
+    const posts=getPosts().filter(p=>p.id!==id);
+    savePosts(posts);
+    const comments=getComments().filter(c=>c.articleId!==id);
+    saveComments(comments);
+    updateAdminStats();
+    renderAdminPostsTable();
+    renderAdminCommentsTable();
+    showToast('Article deleted','info');
+  });
+}
+
+function renderAdminCommentsTable(){
+  const comments=getComments().slice().reverse();
+  const posts=getPosts();
+  const tbody=document.getElementById('admin-comments-tbody');
+  tbody.innerHTML=comments.length?comments.map(c=>{
+    const postTitle=c.articleId.startsWith('post_')
+      ?(posts.find(p=>p.id===c.articleId)?.title||c.articleId)
+      :c.articleId.replace('rss_','').substring(0,20)+'...';
+    return `<tr>
+      <td><strong>${esc(c.username||'Anonymous')}</strong></td>
+      <td style="max-width:220px;"><div style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(c.text)}</div></td>
+      <td style="max-width:180px;font-size:.8rem;color:var(--text-muted);">${esc(postTitle)}</td>
+      <td>${formatDate(c.createdAt)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="adminDeleteComment('${c.id}')"><i class="fas fa-trash"></i></button></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="5"><div class="empty-state"><i class="fas fa-comments"></i><p>No comments yet.</p></div></td></tr>`;
+}
+
+function adminDeleteComment(id){
+  openDeleteModal('Delete this comment?',()=>{
+    const comments=getComments().filter(c=>c.id!==id&&c.parentId!==id);
+    saveComments(comments);
+    renderAdminCommentsTable();
+    updateAdminStats();
+    showToast('Comment deleted','info');
+  });
+}
+
+function renderAdminUsersTable(){
+  const users=getUsers().filter(u=>u.role!=='admin');
+  const tbody=document.getElementById('admin-users-tbody');
+  tbody.innerHTML=users.length?users.map(u=>`
+    <tr>
+      <td><strong>${esc(u.username)}</strong></td>
+      <td style="font-size:.83rem;">${esc(u.email||'-')}</td>
+      <td style="font-size:.83rem;">${esc(u.phone||'-')}</td>
+      <td><span class="cat-badge cat-technology">User</span></td>
+      <td style="font-size:.78rem;color:var(--text-muted);">${formatDate(u.joined)}</td>
+    </tr>`).join(''):`<tr><td colspan="5"><div class="empty-state"><i class="fas fa-users"></i><p>No registered users yet.</p></div></td></tr>`;
+}
+
+function switchAdminTab(tab){
+  document.querySelectorAll('.a-tab').forEach((t,i)=>{
+    const tabs=['post','posts','comments','users'];
+    t.classList.toggle('active',tabs[i]===tab);
+  });
+  document.querySelectorAll('.a-tab-body').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NAVIGATION / PAGE ROUTING
+// ═══════════════════════════════════════════════════════════════════
+let currentCategory='sports';
+
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+page);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(page==='home') document.getElementById('nav-home')?.classList.add('active');
+
+  // Close user dropdown
+  document.getElementById('nav-user-area')?.classList.remove('open');
+
+  // Page-specific init
+  if(page==='home') renderHome();
+  if(page==='category') renderCategory(currentCategory);
+  if(page==='profile') renderProfile();
+  if(page==='admin') renderAdmin();
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showCategory(cat){
+  currentCategory=cat;
+  showPage('category');
+}
+
+function updateNavAuth(){
+  const user=getCurrentUser();
+  const authArea=document.getElementById('nav-auth-area');
+  const userArea=document.getElementById('nav-user-area');
+
+  if(user){
+    authArea.style.display='none';
+    userArea.style.display='flex';
+    // Set pfp
+    const pfpEl=document.getElementById('nav-pfp-el');
+    if(user.pfp) pfpEl.innerHTML=`<img src="${user.pfp}">`;
+    else pfpEl.textContent=user.username.charAt(0).toUpperCase();
+    document.getElementById('nav-username-el').textContent=user.username;
+    document.getElementById('nav-userrole-el').textContent=user.role==='admin'?'Admin':'Member';
+    document.getElementById('udrop-name').textContent=user.username;
+    document.getElementById('udrop-email').textContent=user.email;
+    // Admin link in dropdown
+    const adminLink=document.getElementById('udrop-admin-link');
+    if(adminLink) adminLink.style.display=user.role==='admin'?'flex':'none';
+  } else {
+    authArea.style.display='flex';
+    userArea.style.display='none';
+  }
+}
+
+function toggleUserDropdown(e){
+  e.stopPropagation();
+  document.getElementById('nav-user-area').classList.toggle('open');
+}
+
+document.addEventListener('click',()=>{
+  document.getElementById('nav-user-area')?.classList.remove('open');
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════
+function esc(str){
+  if(!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function escAttr(str){return esc(str).replace(/'/g,'&#x27;');}
+
+function showToast(msg,type='success'){
+  const container=document.getElementById('toast-container');
+  const icons={success:'fas fa-check-circle',error:'fas fa-exclamation-circle',info:'fas fa-info-circle'};
+  const colors={success:'var(--green)',error:'var(--accent)',info:'var(--purple)'};
+  const toast=document.createElement('div');
+  toast.className=`toast ${type}`;
+  toast.innerHTML=`<i class="${icons[type]||icons.info}" style="color:${colors[type]||colors.info};font-size:1.1rem;flex-shrink:0;"></i><span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(()=>{toast.style.animation='toastIn .3s ease reverse';setTimeout(()=>toast.remove(),300);},3500);
+}
+
+function togglePw(id,btn){
+  const input=document.getElementById(id);
+  if(!input) return;
+  const isHidden=input.type==='password';
+  input.type=isHidden?'text':'password';
+  btn.innerHTML=isHidden?'<i class="fas fa-eye-slash"></i>':'<i class="fas fa-eye"></i>';
+}
+
+// Delete modal
+let deleteCallback=null;
+function openDeleteModal(msg,cb){
+  deleteCallback=cb;
+  document.getElementById('delete-modal-msg').textContent=msg;
+  document.getElementById('delete-modal').classList.add('open');
+}
+function closeDeleteModal(){document.getElementById('delete-modal').classList.remove('open');deleteCallback=null;}
+function confirmDelete(){if(deleteCallback)deleteCallback();closeDeleteModal();}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click',e=>{if(e.target===overlay){overlay.classList.remove('open');}});
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+initDB();
+updateNavAuth();
+showPage('home');
+</script>
+</body>
+</html>
